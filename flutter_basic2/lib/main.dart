@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic2/widgets/chart_switch.dart';
 import './themes/root_theme.dart';
-import './widgets/adaptive_appBar.dart';
 import './models/transaction.dart';
 import './widgets/chart.dart';
 import './widgets/new_transaction.dart';
@@ -29,9 +28,26 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transaction> _userTransaction = [];
   bool _showChart = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   List<Transaction> get _recentTransactions {
     return _userTransaction.where((tx) {
@@ -81,45 +97,84 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  List<Widget> _buildLandscapeContent(double bodySize) {
+    return [
+      Container(
+        height: bodySize * 0.3,
+        child: ChartSwitch(_changeChartSwitch, _showChart),
+      ),
+      _showChart
+          ? Container(
+              height: bodySize * 0.7,
+              child: Chart(_recentTransactions),
+            )
+          : Container(
+              height: bodySize * 0.7,
+              child: TransactionList(_userTransaction, _deleteTransaction),
+            ),
+    ];
+  }
+
+  List<Widget> _buildPortraitContent(double bodySize) {
+    return [
+      Container(
+        height: bodySize * 0.3,
+        child: Chart(_recentTransactions),
+      ),
+      Container(
+        height: bodySize * 0.7,
+        child: TransactionList(_userTransaction, _deleteTransaction),
+      ),
+    ];
+  }
+
+  Widget _buildCupertinoAppBar() {
+    return CupertinoNavigationBar(
+      middle: Text(
+        'Personal Expenses',
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            child: Icon(
+              CupertinoIcons.add,
+            ),
+            onTap: () => _startAddNewTransaction(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      title: Text('Personal Expenses'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final PreferredSizeWidget appBar = AdaptiveAppBar(_startAddNewTransaction);
+    final PreferredSizeWidget appBar =
+        Platform.isIOS ? _buildCupertinoAppBar() : _buildAppBar();
     final double bodySize = mediaQuery.size.height -
         appBar.preferredSize.height -
         mediaQuery.padding.top;
-    final txListWidget = Container(
-      height: bodySize * 0.7,
-      child: TransactionList(_userTransaction, _deleteTransaction),
-    );
     final pageBody = SafeArea(
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            if (isLandscape)
-              Container(
-                height: bodySize * 0.3,
-                child: ChartSwitch(_changeChartSwitch, _showChart),
-              ),
-            if (!isLandscape)
-              Column(
-                children: [
-                  Container(
-                    height: bodySize * 0.3,
-                    child: Chart(_recentTransactions),
-                  ),
-                  txListWidget,
-                ],
-              )
-            else
-              _showChart
-                  ? Container(
-                      height: bodySize * 0.7,
-                      child: Chart(_recentTransactions),
-                    )
-                  : txListWidget
+            if (isLandscape) ..._buildLandscapeContent(bodySize),
+            if (!isLandscape) ..._buildPortraitContent(bodySize),
           ],
         ),
       ),
