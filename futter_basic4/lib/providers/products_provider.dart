@@ -22,7 +22,7 @@ class ProductsProvider with ChangeNotifier {
     ProductProvider(
       id: 'p3',
       title: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
+      description: 'Warm and cozy - exactly what you need for the winter. Warm and cozy - exactly what you need for the winter.',
       price: 19.99,
       imageUrl:
           'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
@@ -36,8 +36,13 @@ class ProductsProvider with ChangeNotifier {
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
+
   List<ProductProvider> get items {
     return [..._items];
+  }
+
+  List<ProductProvider> get favoriteItems {
+    return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
   ProductProvider findById(String id) {
