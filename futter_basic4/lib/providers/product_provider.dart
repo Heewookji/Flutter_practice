@@ -21,4 +21,9 @@ class ProductProvider with ChangeNotifier {
     isFavorite = !isFavorite;
     notifyListeners();
   }
+
+  @override
+  String toString() {
+    return '{ ${this.id} : ${this.title} : ${this.description} : ${this.price} : ${this.imageUrl} }';
+  }
 }
