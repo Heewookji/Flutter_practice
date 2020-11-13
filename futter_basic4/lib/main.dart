@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import './providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import './screens/auth_screen.dart';
 import './screens/products_overview_screen.dart';
 import './screens/product_detail.dart';
 import './providers/orders_provider.dart';
@@ -25,6 +27,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => OrdersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
         )
       ],
       child: MaterialApp(
@@ -34,8 +39,9 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato'),
-        initialRoute: ProductsOverviewScreen.routeName,
+        initialRoute: AuthScreen.routeName,
         routes: {
+          AuthScreen.routeName: (ctx) => AuthScreen(),
           ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routName: (ctx) => CartScreen(),

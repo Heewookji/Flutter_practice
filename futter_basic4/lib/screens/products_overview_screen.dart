@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import '../providers/products_provider.dart';
 import '../widgets/app_drawer.dart';
-import 'package:provider/provider.dart';
 import '../screens/cart_screen.dart';
 import '../providers/cart_provider.dart';
 import '../widgets/products_grid.dart';
@@ -22,6 +23,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _showOnlyFavorites = false;
   var _isInit = true;
   var _isLoading = false;
+  var _isLottie = true;
 
   @override
   void didChangeDependencies() {
