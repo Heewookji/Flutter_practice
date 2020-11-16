@@ -33,36 +33,39 @@ class _OrderItemState extends State<OrderItem> {
               });
             },
           ),
-          if (_isExpanded)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              height: min(widget.order.products.length * 20.0 + 50, 180),
-              child: ListView(
-                children: widget.order.products
-                    .map(
-                      (cartItem) => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            cartItem.title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+            margin: EdgeInsets.only(bottom: 6),
+            height: _isExpanded
+                ? min(widget.order.products.length * 20.0 + 10, 100)
+                : 0,
+            child: ListView(
+              children: widget.order.products
+                  .map(
+                    (cartItem) => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          cartItem.title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            '${cartItem.quantity}x \$${cartItem.price}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
+                        ),
+                        Text(
+                          '${cartItem.quantity}x \$${cartItem.price}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
                           ),
-                        ],
-                      ),
-                    )
-                    .toList(),
-              ),
-            )
+                        ),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
         ],
       ),
     );
