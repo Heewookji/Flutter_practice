@@ -23,8 +23,8 @@
       "type": "dart"
     },
     {
-      "name": "futter_basic4",
-      "cwd": "futter_basic4",
+      "name": "flutter_basic4",
+      "cwd": "flutter_basic4",
       "request": "launch",
       "type": "dart"
     }
