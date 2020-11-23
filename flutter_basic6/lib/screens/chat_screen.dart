@@ -16,12 +16,13 @@ class ChatScreen extends StatelessWidget {
         child: Icon(Icons.add),
         onPressed: () {
           FirebaseFirestore.instance
-              .collection('chats/dnX33ic2DGya2UUlSUtB/messages')
+              .collection('chats/s1i0dftkSgC4ukKAUbbZ/messages')
               .snapshots()
               .listen((data) {
             data.docs.forEach((doc) {
               print(doc['text']);
             });
+            print(data.docs[0]['text']);
           });
         },
       ),
