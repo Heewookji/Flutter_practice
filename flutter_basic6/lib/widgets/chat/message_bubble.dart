@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
-  MessageBubble(this.message, this.isMine, this.userName, {this.key});
+  MessageBubble(
+    this.message,
+    this.isMine,
+    this.userName,
+    this.userImage, {
+    this.key,
+  });
   final Key key;
   final String message;
   final String userName;
+  final String userImage;
   final bool isMine;
   @override
   Widget build(BuildContext context) {
@@ -17,6 +24,12 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment:
               isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(userImage),
+              ),
+            ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
               child: Text(

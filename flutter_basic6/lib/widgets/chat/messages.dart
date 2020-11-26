@@ -27,6 +27,7 @@ class Messages extends StatelessWidget {
               message['text'],
               message['userId'] == currentUser.uid,
               message['userName'],
+              message['userImage'],
               key: ValueKey(message.id),
             );
           },

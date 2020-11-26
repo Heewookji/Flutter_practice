@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_basic6/screens/chat_screen.dart';
 import 'screens/auth_screen.dart';
-
+ 
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
