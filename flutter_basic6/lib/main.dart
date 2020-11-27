@@ -1,9 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_basic6/screens/chat_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+
 import 'screens/auth_screen.dart';
- 
+import 'screens/chat_screen.dart';
+import 'screens/splash_screen.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -19,6 +22,19 @@ class _MyAppState extends State<MyApp> {
     try {
       // Wait for Firebase to initialize and set `_initialized` state to true
       await Firebase.initializeApp();
+      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+      _firebaseMessaging.requestNotificationPermissions();
+      _firebaseMessaging.configure(onMessage: (msg) {
+        print(msg);
+        return;
+      }, onLaunch: (msg) {
+        print(msg);
+        return;
+      }, onResume: (msg) {
+        print(msg);
+        return;
+      });
+      _firebaseMessaging.subscribeToTopic('chats');
       setState(() {
         _initialized = true;
       });
@@ -39,7 +55,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (_error) return null;
-    if (!_initialized) return Center(child: CircularProgressIndicator());
     return MaterialApp(
       title: 'FlutterChat',
       theme: ThemeData(
@@ -55,13 +70,18 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, userSnapshot) {
-          if (userSnapshot.hasData) return ChatScreen();
-          return AuthScreen();
-        },
-      ),
+      home: !_initialized
+          ? SplashScreen()
+          : StreamBuilder(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting) {
+                  return SplashScreen();
+                }
+                if (userSnapshot.hasData) return ChatScreen();
+                return AuthScreen();
+              },
+            ),
     );
   }
 }
