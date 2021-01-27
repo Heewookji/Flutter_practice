@@ -22,13 +22,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _controller;
-  Color _pickedColor = Colors.white;
-
+  Color _pickedColor;
+  Offset _pickedLocation;
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 3000),
+      duration: Duration(milliseconds: 600),
       vsync: this,
     );
   }
@@ -39,10 +39,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onPress(Color color) async {
+  void _onTap(Color color, Offset tappedLocation) async {
+    if (_controller.isAnimating) return;
     _controller.reset();
     setState(() {
       _pickedColor = color;
+      _pickedLocation = tappedLocation;
     });
     await _controller.forward();
   }
@@ -50,41 +52,43 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('animation page')),
-      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           FullScreenAnimation(
             _controller,
             _pickedColor,
+            _pickedLocation,
           ),
           Center(
-            child: ListView(
-              scrollDirection: Axis.horizontal,
+            child: Row(
+//              scrollDirection: Axis.horizontal,
               children: [
-                IconButton(
-                  icon: Icon(
+                GestureDetector(
+                  child: Icon(
                     Icons.play_arrow,
                     color: Colors.cyan,
+                    size: 60,
                   ),
-                  iconSize: 50,
-                  onPressed: () => _onPress(Colors.cyan),
+                  onTapUp: (detail) =>
+                      _onTap(Colors.cyan, detail.globalPosition),
                 ),
-                IconButton(
-                  icon: Icon(
+                GestureDetector(
+                  child: Icon(
                     Icons.play_arrow,
                     color: Colors.red,
+                    size: 60,
                   ),
-                  iconSize: 50,
-                  onPressed: () => _onPress(Colors.red),
+                  onTapUp: (detail) =>
+                      _onTap(Colors.red, detail.globalPosition),
                 ),
-                IconButton(
-                  icon: Icon(
+                GestureDetector(
+                  child: Icon(
                     Icons.play_arrow,
                     color: Colors.amber,
+                    size: 60,
                   ),
-                  iconSize: 50,
-                  onPressed: () => _onPress(Colors.amber),
+                  onTapUp: (detail) =>
+                      _onTap(Colors.amber, detail.globalPosition),
                 ),
               ],
             ),
@@ -98,13 +102,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 class FullScreenAnimation extends StatefulWidget {
   final AnimationController _controller;
   final Color _color;
+  final Offset _location;
   final Animation<double> _animation;
 
-  FullScreenAnimation(this._controller, this._color)
+  FullScreenAnimation(this._controller, this._color, this._location)
       : _animation = Tween<double>(begin: 0, end: 1.0).animate(
           CurvedAnimation(
             parent: _controller,
-            curve: Curves.easeOutCirc,
+            curve: Curves.easeInOutQuart,
           ),
         );
 
@@ -119,16 +124,21 @@ class _FullScreenAnimationState extends State<FullScreenAnimation> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     final result = Stack(
-      alignment: Alignment.center,
       children: [
         Container(color: _pastColor),
         AnimatedBuilder(
           animation: widget._controller,
           builder: (ctx, child) {
-            return Container(
-              width: screenSize.width * widget._animation.value,
-              height: screenSize.height * widget._animation.value,
-              color: widget._color,
+            return ClipPath(
+              clipper: MyCustomClipper(
+                widget._location,
+                widget._animation.value,
+              ),
+              child: Container(
+                width: screenSize.width,
+                height: screenSize.height,
+                color: widget._color,
+              ),
             );
           },
         ),
@@ -137,4 +147,26 @@ class _FullScreenAnimationState extends State<FullScreenAnimation> {
     _pastColor = widget._color;
     return result;
   }
+}
+
+class MyCustomClipper extends CustomClipper<Path> {
+  final location;
+  final value;
+
+  MyCustomClipper(this.location, this.value);
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.addOval(
+      Rect.fromCircle(
+        center: location ?? Offset(0, 0),
+        radius: (size.height * value) / 1.5,
+      ),
+    );
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
