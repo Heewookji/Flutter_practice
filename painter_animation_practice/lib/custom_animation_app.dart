@@ -22,14 +22,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _controller;
+  Animation<double> _animation;
   Color _pickedColor;
+  Color _pastColor;
   Offset _pickedLocation;
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       duration: Duration(milliseconds: 600),
       vsync: this,
+    );
+    _animation = Tween<double>(begin: 0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOutQuart,
+      ),
     );
   }
 
@@ -47,15 +56,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       _pickedLocation = tappedLocation;
     });
     await _controller.forward();
+    _pastColor = color;
   }
 
   @override
   Widget build(BuildContext context) {
+    Size _screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
-          FullScreenAnimation(
-            _controller,
+          Container(color: _pastColor),
+          CustomFillAnimation(
+            _screenSize,
+            _animation,
             _pickedColor,
             _pickedLocation,
           ),
@@ -99,69 +112,48 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 }
 
-class FullScreenAnimation extends StatefulWidget {
-  final AnimationController _controller;
+class CustomFillAnimation extends AnimatedWidget {
+  final Size _size;
   final Color _color;
   final Offset _location;
   final Animation<double> _animation;
 
-  FullScreenAnimation(this._controller, this._color, this._location)
-      : _animation = Tween<double>(begin: 0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.easeInOutQuart,
-          ),
-        );
-
-  @override
-  _FullScreenAnimationState createState() => _FullScreenAnimationState();
-}
-
-class _FullScreenAnimationState extends State<FullScreenAnimation> {
-  Color _pastColor = Colors.white;
+  CustomFillAnimation(
+    this._size,
+    this._animation,
+    this._color,
+    this._location,
+  ) : super(listenable: _animation);
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    final result = Stack(
-      children: [
-        Container(color: _pastColor),
-        AnimatedBuilder(
-          animation: widget._controller,
-          builder: (ctx, child) {
-            return ClipPath(
-              clipper: MyCustomClipper(
-                widget._location,
-                widget._animation.value,
-              ),
-              child: Container(
-                width: screenSize.width,
-                height: screenSize.height,
-                color: widget._color,
-              ),
-            );
-          },
-        ),
-      ],
+    return ClipPath(
+      clipper: MyCustomClipper(
+        _location,
+        _animation.value,
+      ),
+      child: Container(
+        width: _size.width,
+        height: _size.height,
+        color: _color,
+      ),
     );
-    _pastColor = widget._color;
-    return result;
   }
 }
 
 class MyCustomClipper extends CustomClipper<Path> {
-  final location;
-  final value;
+  final _location;
+  final _value;
 
-  MyCustomClipper(this.location, this.value);
+  MyCustomClipper(this._location, this._value);
 
   @override
   Path getClip(Size size) {
     final path = Path();
     path.addOval(
       Rect.fromCircle(
-        center: location ?? Offset(0, 0),
-        radius: (size.height * value) / 1.5,
+        center: _location ?? Offset(0, 0),
+        radius: (size.height * _value) / 1.5,
       ),
     );
     return path;
