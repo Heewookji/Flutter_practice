@@ -8,8 +8,6 @@ class CustomAnimationApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0)),
       home: MyHomePage(),
     );
   }
@@ -24,9 +22,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _controller;
   Animation<double> _animation;
   Color _pickedColor;
-  Color _pastColor;
   Offset _pickedLocation;
-
+  Color _pastColor;
   @override
   void initState() {
     super.initState();
@@ -48,12 +45,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onTap(Color color, Offset tappedLocation) async {
+  void _onTap(Color color, Offset pickedLocation) async {
     if (_controller.isAnimating) return;
     _controller.reset();
     setState(() {
       _pickedColor = color;
-      _pickedLocation = tappedLocation;
+      _pickedLocation = pickedLocation;
     });
     await _controller.forward();
     _pastColor = color;
@@ -74,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
           Center(
             child: Row(
-//              scrollDirection: Axis.horizontal,
               children: [
                 GestureDetector(
                   child: Icon(
@@ -142,8 +138,8 @@ class CustomFillAnimation extends AnimatedWidget {
 }
 
 class MyCustomClipper extends CustomClipper<Path> {
-  final _location;
-  final _value;
+  final Offset _location;
+  final double _value;
 
   MyCustomClipper(this._location, this._value);
 
