@@ -1,21 +1,30 @@
 part of 'item_bloc.dart';
 
-@immutable
-abstract class ItemState extends Equatable {
-  @override
-  List<Object> get props => [];
-}
+enum ItemStatus { initial, success, failure }
 
-class ItemFetchInit extends ItemState {}
-
-class ItemFetchLoading extends ItemState {}
-
-class ItemFetchSuccess extends ItemState {
+class ItemState extends Equatable {
   final List<Item> items;
-  ItemFetchSuccess(this.items);
+  final ItemStatus status;
+  final bool hasReachedMax;
+
+  ItemState({
+    this.items = const [],
+    this.status = ItemStatus.initial,
+    this.hasReachedMax = false,
+  });
+
+  ItemState copyWith({
+    ItemStatus status,
+    List<Item> items,
+    bool hasReachedMax,
+  }) {
+    return ItemState(
+      status: status ?? this.status,
+      items: items ?? this.items,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+    );
+  }
 
   @override
-  List<Object> get props => [items];
+  List<Object> get props => [items, status, hasReachedMax];
 }
-
-class ItemFetchFail extends ItemState {}

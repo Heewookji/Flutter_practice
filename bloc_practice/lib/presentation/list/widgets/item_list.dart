@@ -5,21 +5,52 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ItemList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ItemBloc, ItemState>(builder: (ctx, state) {
-      if (state is ItemFetchSuccess)
-        return ListView.builder(
-          itemCount: state.items.length,
-          itemBuilder: (ctx, i) {
-            final item = state.items[i];
-            return ListTile(
-              title: Text(item.title),
-              subtitle: Text(item.userName),
-            );
-          },
+    return BlocConsumer<ItemBloc, ItemState>(
+      listener: (ctx, state) {
+        print(state.hasReachedMax);
+        if (state.status == ItemStatus.failure && state.items.isNotEmpty)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('새로운 데이터를 가져오지 못했습니다'),
+            ),
+          );
+      },
+      builder: (ctx, state) {
+        if (state.items.isNotEmpty)
+          return NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (!state.hasReachedMax &&
+                  scrollInfo is ScrollEndNotification &&
+                  scrollInfo.metrics.pixels ==
+                      scrollInfo.metrics.maxScrollExtent) {
+                context.read<ItemBloc>().add(ItemFetched());
+              }
+              return true;
+            },
+            child: _buildListView(state),
+          );
+        else if (state.status == ItemStatus.failure)
+          return Center(child: Text('데이터를 가져오지 못했습니다.'));
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  ListView _buildListView(ItemState state) {
+    return ListView.builder(
+      itemCount:
+          state.hasReachedMax ? state.items.length : state.items.length + 1,
+      itemBuilder: (ctx, i) {
+        if (i == state.items.length)
+          return Center(child: CircularProgressIndicator());
+        final item = state.items[i];
+        return Container(
+          margin: EdgeInsets.symmetric(vertical: 20),
+          child: ListTile(
+            title: Text(item.title),
+          ),
         );
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    });
+      },
+    );
   }
 }

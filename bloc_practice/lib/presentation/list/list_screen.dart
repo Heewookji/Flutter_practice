@@ -1,5 +1,5 @@
 import 'package:bloc_practice/logic/list/item_bloc.dart';
-import 'package:bloc_practice/repos/item_repository.dart';
+import 'package:bloc_practice/repos/item_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +13,7 @@ class ListScreen extends StatelessWidget {
         title: Text('list'),
       ),
       body: BlocProvider(
-        create: (_) => ItemBloc(itemRepository: context.read<ItemRepository>())
+        create: (_) => ItemBloc(itemRepo: context.read<ItemRepo>())
           ..add(ItemFetched()),
         child: ItemList(),
       ),
