@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rxdart: ^0.25.0
   flutter_bloc: ^6.1.1
 
 
