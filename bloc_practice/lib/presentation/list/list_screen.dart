@@ -1,6 +1,9 @@
-import 'package:bloc_practice/logic/list/list_bloc.dart';
+import 'package:bloc_practice/logic/list/item_bloc.dart';
+import 'package:bloc_practice/repos/item_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'widgets/item_list.dart';
 
 class ListScreen extends StatelessWidget {
   @override
@@ -9,8 +12,10 @@ class ListScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('list'),
       ),
-      body: BlocBuilder<ListBloc, ListState>(
-        builder: (ctx, state) => Container(),
+      body: BlocProvider(
+        create: (_) => ItemBloc(itemRepository: context.read<ItemRepository>())
+          ..add(ItemFetched()),
+        child: ItemList(),
       ),
     );
   }

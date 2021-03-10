@@ -1,4 +1,3 @@
-import 'package:bloc_practice/logic/list/list_bloc.dart';
 import 'package:bloc_practice/presentation/list/list_screen.dart';
 import 'package:bloc_practice/repos/item_repository.dart';
 import 'package:flutter/material.dart';
@@ -10,17 +9,10 @@ class App extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (_) => ItemRepository(),
+          create: (ctx) => ItemRepository(),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) => ListBloc(),
-          ),
-        ],
-        child: AppView(),
-      ),
+      child: AppView(),
     );
   }
 }

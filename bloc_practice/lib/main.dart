@@ -9,5 +9,3 @@ void main() {
   Bloc.observer = SimpleBlocObserver();
   runApp(App());
 }
-
-
