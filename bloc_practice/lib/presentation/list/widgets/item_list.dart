@@ -7,7 +7,6 @@ class ItemList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ItemBloc, ItemState>(
       listener: (ctx, state) {
-        print(state.hasReachedMax);
         if (state.status == ItemStatus.failure && state.items.isNotEmpty)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

@@ -1,6 +1,12 @@
-part of 'tab_bloc.dart';
+part of 'tab_cubit.dart';
 
-@immutable
-abstract class TabState {}
+enum TabStatus { tabOne, tabTwo }
 
-class TabInitial extends TabState {}
+class TabState extends Equatable {
+  final TabStatus status;
+
+  TabState({this.status = TabStatus.tabOne});
+
+  @override
+  List<Object> get props => [status];
+}

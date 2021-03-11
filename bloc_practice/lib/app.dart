@@ -1,4 +1,5 @@
-import 'package:bloc_practice/presentation/list/list_screen.dart';
+import 'package:bloc_practice/logic/tab/tab_cubit.dart';
+import 'package:bloc_practice/presentation/tab/tab_screen.dart';
 import 'package:bloc_practice/repos/item_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +24,10 @@ class AppView extends StatelessWidget {
     return MaterialApp(
       title: 'bloc',
       debugShowCheckedModeBanner: false,
-      home: ListScreen(),
+      home: BlocProvider(
+        create: (ctx) => TabCubit(),
+        child: TabScreen(),
+      ),
     );
   }
 }

@@ -3,7 +3,7 @@ import 'models/item.dart';
 enum ItemRepoResult { maxCount, itemList }
 
 class ItemRepo {
-  static const int limit = 3;
+  static const int limit = 10;
   List<Item> _list = [
     Item('title1'),
     Item('title2'),
